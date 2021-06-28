@@ -1,0 +1,78 @@
+{
+  "name": "teleprompter-app",
+  "version": "1.2.0",
+  "description": "Native App Wrapper for Browser-based TelePrompter",
+  "homepage": "https://github.com/manifestinteractive/teleprompter-app",
+  "license": "MIT",
+  "main": "src/main.js",
+  "keywords": [
+    "Teleprompter",
+    "MacOS",
+    "Windows",
+    "Linux"
+  ],
+  "contributors": [
+    {
+      "name": "Peter Schmalfeldt",
+      "email": "me@peterschmalfeldt.com",
+      "url": "https://peterschmalfeldt.com"
+    }
+  ],
+  "engines": {
+    "node": ">= 12.12.0",
+    "npm": ">= 6.13.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manifestinteractive/teleprompter-app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/manifestinteractive/teleprompter-app/issues"
+  },
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.57",
+    "@electron-forge/maker-deb": "^6.0.0-beta.57",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.57",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.57",
+    "@electron-forge/maker-zip": "^6.0.0-beta.57",
+    "electron": "^13.1.4",
+    "glasstron": "0.0.7",
+    "windowbar": "^1.7.4"
+  },
+  "dependencies": {
+    "electron-settings": "^4.0.2",
+    "electron-squirrel-startup": "^1.0.0"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "teleprompter_app"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
+  }
+}
