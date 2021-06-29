@@ -126,7 +126,7 @@ const createWindow = () => {
   mainWindow.setAlwaysOnTop(true)
 
   // Create App Menu
-  // setMenu()
+  setMenu()
 
   // Exit App on Window Close
   mainWindow.on('closed', () => {
@@ -188,6 +188,7 @@ const createWindow = () => {
 
 	electron.ipcMain.on('close', () => {
 		electron.app.quit()
+    process.exit()
 	})
 
 	electron.ipcMain.on('minimize', (e) => {
@@ -271,6 +272,7 @@ electron.app.on('ready', () => {
 electron.app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     electron.app.quit()
+    process.exit()
   }
 })
 

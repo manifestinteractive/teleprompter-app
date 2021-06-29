@@ -97,7 +97,14 @@ article .teleprompter {
   will-change: transform;
   opacity: 0;
   transition: opacity 0.25s;
+}
+
+article .teleprompter.text-light {
   text-shadow: 0 0 3px #000;
+}
+
+article .teleprompter.text-dark {
+  text-shadow: 0 0 3px #fff;
 }
 
 article .teleprompter.ready {
@@ -349,6 +356,22 @@ input.jscolor {
 
 #windowbar {
   background-color: #141414;
+  width: 100%;
+  height: 22px;
+  display: block;
+  z-index: 10000;
+  position: static;
+  top: 0;
+  left: 0;
+}
+
+.windowbar {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 22px;
+  background: #141414;
 }
 
 .windowbar-title, .windowbar.wb-mac .windowbar-title {

@@ -6,7 +6,7 @@
 var TelePrompter = (function() {
   /**
    * ==================================================
-   * TelePrompter App Settings
+   * TelePrompter Settings
    * ==================================================
    */
 
@@ -30,14 +30,14 @@ var TelePrompter = (function() {
 
   /* Default App Settings */
   var defaultConfig = {
-    backgroundColor: '#141414',
+    backgroundColor: 'rgba(20, 20, 20, 0.92)',
     dimControls: true,
     flipX: false,
     flipY: false,
     fontSize: 60,
     pageSpeed: 35,
     pageScrollPercent: 0,
-    textColor: '#ffffff'
+    textColor: 'rgba(255, 255, 255, 1)'
   };
 
   /* Custom App Settings */
@@ -94,7 +94,11 @@ var TelePrompter = (function() {
     $elm.textColor.on('change.teleprompter', handleTextColor);
 
     // Listen for Key Presses
-    $elm.teleprompter.keyup(updateTeleprompter);
+    $elm.teleprompter.on('keyup.teleprompter', updateTeleprompter);
+    $elm.teleprompter.on('blur.teleprompter', cleanTeleprompter);
+    $elm.teleprompter.on('paste.teleprompter', function() {
+      setTimeout(cleanTeleprompter, 100)
+    });
     $elm.body.keydown(navigate);
   }
 
@@ -114,7 +118,41 @@ var TelePrompter = (function() {
   }
 
   /**
-   * Initialize TelePrompter App
+   * Get Brightness of Color using HEX or RBG values
+   */
+  function getBrightness(color) {
+    // Variables for red, green, blue values
+    var r;
+    var g;
+    var b;
+    var hsp;
+
+    // Check the format of the color, HEX or RGB?
+    if (color.match(/^rgb/)) {
+        // If HEX --> store the red, green, blue values in separate variables
+        var rgb = color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/);
+
+        r = rgb[1];
+        g = rgb[2];
+        b = rgb[3];
+    } else {
+        // If RGB --> Convert it to HEX
+        var hex = +('0x' + color.slice(1).replace(color.length < 5 && /./g, '$&$&'));
+
+        r = hex >> 16;
+        g = hex >> 8 & 255;
+        b = hex & 255;
+    }
+
+    // HSP Color Brightness
+    hsp = Math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b));
+
+    // Using the HSP value, determine whether the color is light or dark
+    return (hsp > 127.5) ? 'text-light' : 'text-dark';
+  };
+
+  /**
+   * Initialize TelePrompter
    */
   function init() {
     // Exit if already started
@@ -169,9 +207,13 @@ var TelePrompter = (function() {
 
       // Update UI with Custom Background Color
       $elm.backgroundColor.val(config.backgroundColor);
+      $elm.backgroundColor[0].jscolor.fromString(config.backgroundColor);
       $elm.teleprompter.css('background-color', config.backgroundColor);
     } else {
-      cleanTeleprompter();
+      // Update UI with Default Background Color
+      $elm.backgroundColor.val(defaultConfig.backgroundColor);
+      $elm.backgroundColor[0].jscolor.fromString(defaultConfig.backgroundColor);
+      $elm.teleprompter.css('background-color', defaultConfig.backgroundColor);
     }
 
     if (localStorage.getItem('teleprompter_dim_controls')) {
@@ -218,8 +260,28 @@ var TelePrompter = (function() {
     if (localStorage.getItem('teleprompter_text_color')) {
       config.textColor = localStorage.getItem('teleprompter_text_color');
       $elm.textColor.val(config.textColor);
+      $elm.textColor[0].jscolor.fromString(config.textColor);
       $elm.teleprompter.css('color', config.textColor);
+
+      var brightness = getBrightness(config.textColor);
+
+      $elm.teleprompter.removeClass('text-light');
+      $elm.teleprompter.removeClass('text-dark');
+      $elm.teleprompter.addClass(brightness);
+    } else {
+      $elm.textColor.val(defaultConfig.textColor);
+      $elm.textColor[0].jscolor.fromString(defaultConfig.textColor);
+      $elm.teleprompter.css('color', defaultConfig.textColor);
+
+      var brightness = getBrightness(defaultConfig.textColor);
+
+      $elm.teleprompter.removeClass('text-light');
+      $elm.teleprompter.removeClass('text-dark');
+      $elm.teleprompter.addClass(brightness);
     }
+
+    cleanTeleprompter();
+    $('p:empty', $elm.teleprompter).remove();
 
     clearTimeout(timerGA);
     timerGA = setTimeout(function(){}, timerExp);
@@ -333,6 +395,9 @@ var TelePrompter = (function() {
     if (text && text.substr(0, 3) !== '<p>') {
       text = '<p>' + text + '</p>';
     }
+
+    // Final Cleanup to strip out any HTML that is not a P or BR tag
+    text = text.replace(/(<\/?(?:p|br)[^>]*>)|<[^>]+>/ig, '$1');
 
     $elm.teleprompter.html(text);
     $('p:empty', $elm.teleprompter).remove();
@@ -607,6 +672,12 @@ var TelePrompter = (function() {
 
     $elm.teleprompter.css('color', config.textColor);
     localStorage.setItem('teleprompter_text_color', config.textColor);
+
+    var brightness = getBrightness(config.textColor);
+
+    $elm.teleprompter.removeClass('text-light');
+    $elm.teleprompter.removeClass('text-dark');
+    $elm.teleprompter.addClass(brightness);
 
     if (socket && remote) {
       clearTimeout(emitTimeout);
@@ -1215,6 +1286,11 @@ var TelePrompter = (function() {
    * @returns Boolean
    */
   function updateTeleprompter(evt) {
+    // Ignore Navigation Keys
+    if ((evt.keyCode <= 33 && evt.keyCode >= 40) || evt.keyCode === 91 || evt.keyCode === 16) {
+      return;
+    }
+
     if (evt.keyCode == 27) {
       $elm.teleprompter.blur();
       evt.preventDefault();
@@ -1223,7 +1299,6 @@ var TelePrompter = (function() {
     }
 
     localStorage.setItem('teleprompter_text', $elm.teleprompter.html());
-    $('p:empty', $elm.teleprompter).remove();
 
     if (debug) {
       console.log('[TP]', 'TelePrompter Text Updated');

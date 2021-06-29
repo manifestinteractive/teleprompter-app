@@ -8,8 +8,12 @@
     "window.title": "Teleprompter${separator}Electron App",
     "cSpell.words": [
 		"glasstron",
+		"icns",
 		"jscolor",
-		"windowbar"
+		"prompter",
+		"tele",
+		"windowbar",
+		"windows"
 	]
   }
 }
