@@ -7,13 +7,14 @@
 	"settings": {
     "window.title": "Teleprompter${separator}Electron App",
     "cSpell.words": [
-		"glasstron",
-		"icns",
-		"jscolor",
-		"prompter",
-		"tele",
-		"windowbar",
-		"windows"
-	]
+      "glasstron",
+      "icns",
+      "jscolor",
+      "manifestinteractive",
+      "prompter",
+      "tele",
+      "windowbar",
+      "windows"
+    ]
   }
 }

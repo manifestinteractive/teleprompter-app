@@ -9,8 +9,23 @@ module.exports = {
     icon: './build/icon',
     name: productName,
     overwrite: true,
-    appCopyright: `© ${year} https://promptr.tv`,
-    dir: './src'
+    appCopyright: `© ${year} Peter Schmalfeldt`,
+    ignore: [
+      "^(\/.github$)",
+      "^(\/.vscode$)",
+      "^(\/build$)",
+      "^(\/out$)",
+      '.editorconfig',
+      '.env',
+      '.env.example',
+      '.gitignore',
+      '.nvmrc',
+      '^(\/DEVELOPERS.md$)',
+      '^(\/README.md$)',
+      'forge-config.js',
+      'package-lock.json',
+      'teleprompter.code-workspace'
+    ]
   },
   makers: [
     {
@@ -55,6 +70,18 @@ module.exports = {
             path: path.resolve(process.cwd(), `out/${productName}-darwin-x64/${productName}.app`)
           }
         ]
+      }
+    }
+  ],
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'manifestinteractive',
+          name: 'teleprompter-app'
+        },
+        draft: true
       }
     }
   ]

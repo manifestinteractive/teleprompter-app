@@ -5,6 +5,8 @@ const glasstron = require('glasstron')
 const path = require('path')
 const settings = require('electron-settings')
 
+const year = new Date().getFullYear()
+
 // App Variables
 let lastWindowState
 let mainWindow
@@ -246,7 +248,7 @@ electron.app.commandLine.appendSwitch('enable-transparent-visuals')
  electron.app.setAboutPanelOptions({
   applicationName: 'TelePrompter',
   applicationVersion: electron.app.getVersion(),
-  copyright: '© 2021 https://promptr.tv',
+  copyright: `© ${year} Peter Schmalfeldt`,
   credits: 'Created by Peter Schmalfeldt',
   authors: 'Created by Peter Schmalfeldt',
   website: 'https://github.com/manifestinteractive/teleprompter-app',
