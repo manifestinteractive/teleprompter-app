@@ -8,7 +8,6 @@ const settings = require('electron-settings')
 const year = new Date().getFullYear()
 
 // App Variables
-let lastWindowState
 let mainWindow
 let resizeDebounce
 
@@ -28,7 +27,7 @@ settings.configure({
  * App Menu Template
  * @type array
  */
- let menuTemplate = [
+const menuTemplate = [
   {
     label: 'TelePrompter',
     submenu: [
@@ -82,14 +81,14 @@ settings.configure({
       }
     ]
   }
- ]
+]
 
- /**
+/**
  * Build App Menu
  */
 const setMenu = () => {
   if (electron.Menu && typeof electron.Menu.buildFromTemplate !== 'undefined') {
-    let appMenu = electron.Menu.buildFromTemplate(menuTemplate)
+    const appMenu = electron.Menu.buildFromTemplate(menuTemplate)
     electron.Menu.setApplicationMenu(appMenu)
   }
 }
@@ -99,33 +98,33 @@ const setMenu = () => {
  */
 const createWindow = () => {
   // Initialize Main Window
-	mainWindow = new glasstron.BrowserWindow({
-		autoHideMenuBar: true,
-		backgroundColor: 'rgba(0, 0, 0, 0)',
-		blur: false,
-		frame: false,
+  mainWindow = new glasstron.BrowserWindow({
+    autoHideMenuBar: true,
+    backgroundColor: 'rgba(0, 0, 0, 0)',
+    blur: false,
+    frame: false,
     hasShadow: false,
-		height: 768,
+    height: 768,
     icon: path.join(__dirname, 'assets/icon/png/128x128.png'),
-		resizable: true,
-		show: true,
+    resizable: true,
+    show: true,
     title: 'TelePrompter',
-		transparent: true,
-		width: 1024,
-		webPreferences: {
+    transparent: true,
+    width: 1024,
+    webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       enableRemoteModule: true,
-			nodeIntegration: true,
+      nodeIntegration: true,
       contextIsolation: false
-		}
-	})
+    }
+  })
 
   if (process.platform === 'darwin') {
-    electron.app.dock.setIcon(path.join(__dirname, 'assets/icon/png/128x128.png'));
+    electron.app.dock.setIcon(path.join(__dirname, 'assets/icon/png/128x128.png'))
   }
 
   // Load HTML Page into Window
-	mainWindow.webContents.loadURL(`file://${__dirname}/index.html`)
+  mainWindow.webContents.loadURL(`file://${__dirname}/index.html`)
 
   // We need this to sit on top of other apps
   mainWindow.setAlwaysOnTop(true)
@@ -143,7 +142,7 @@ const createWindow = () => {
   mainWindow.webContents.on('new-window', (e, url) => {
     e.preventDefault()
     electron.shell.openExternal(url)
-  });
+  })
 
   // Track Window States
   mainWindow.on('resize', () => {
@@ -155,8 +154,6 @@ const createWindow = () => {
 
   // Get Last Window State
   settings.get('lastWindowState').then(lastState => {
-    lastWindowState = lastState
-
     // Update Window Bounds
     mainWindow.setBounds({
       x: lastState.x,
@@ -174,51 +171,52 @@ const createWindow = () => {
     }
 
     mainWindow.show()
-  }).catch((error) => {
+  }).catch((err) => {
+    console.error(err)
     mainWindow.show()
   })
 
-	if (process.platform === 'linux') {
-		mainWindow.on('resize', () => {
-			mainWindow.webContents.send('maximized', !mainWindow.isNormal())
-		})
-	}
+  if (process.platform === 'linux') {
+    mainWindow.on('resize', () => {
+      mainWindow.webContents.send('maximized', !mainWindow.isNormal())
+    })
+  }
 
-	mainWindow.on('ready-to-show', () => {
-		if (process.platform === 'linux') {
+  mainWindow.on('ready-to-show', () => {
+    if (process.platform === 'linux') {
       mainWindow.webContents.send('maximized', !mainWindow.isNormal())
     }
-		mainWindow.show()
-	})
+    mainWindow.show()
+  })
 
-	electron.ipcMain.on('close', () => {
+  electron.ipcMain.on('close', () => {
     if (mainWindow) {
       mainWindow = null
       electron.app.quit()
       process.exit()
     }
-	})
+  })
 
-	electron.ipcMain.on('minimize', (e) => {
-		const mainWindow = electron.BrowserWindow.fromWebContents(e.sender)
-		mainWindow.minimize()
-	})
+  electron.ipcMain.on('minimize', (e) => {
+    const mainWindow = electron.BrowserWindow.fromWebContents(e.sender)
+    mainWindow.minimize()
+  })
 
   electron.ipcMain.on('maximize', (e) => {
-		const mainWindow = electron.BrowserWindow.fromWebContents(e.sender)
-		mainWindow.maximize()
-	})
+    const mainWindow = electron.BrowserWindow.fromWebContents(e.sender)
+    mainWindow.maximize()
+  })
 
   electron.ipcMain.on('fullscreen', (e) => {
-		const mainWindow = electron.BrowserWindow.fromWebContents(e.sender)
+    const mainWindow = electron.BrowserWindow.fromWebContents(e.sender)
     if (mainWindow.isFullScreen()) {
       mainWindow.setFullScreen(false)
     } else {
       mainWindow.setFullScreen(true)
     }
-	})
+  })
 
-	return mainWindow
+  return mainWindow
 }
 
 /**
@@ -226,7 +224,7 @@ const createWindow = () => {
  * Triggered after Window Resize & Move
  */
 const storeWindowState = () => {
-  let bounds = mainWindow.getBounds()
+  const bounds = mainWindow.getBounds()
   settings.set('lastWindowState', {
     fullscreen: mainWindow.isFullScreen(),
     height: bounds.height,
@@ -245,7 +243,7 @@ electron.app.commandLine.appendSwitch('enable-transparent-visuals')
 /**
  * Set About Panel Options
  */
- electron.app.setAboutPanelOptions({
+electron.app.setAboutPanelOptions({
   applicationName: 'TelePrompter',
   applicationVersion: electron.app.getVersion(),
   copyright: `© ${year} Peter Schmalfeldt`,
@@ -253,13 +251,12 @@ electron.app.commandLine.appendSwitch('enable-transparent-visuals')
   authors: 'Created by Peter Schmalfeldt',
   website: 'https://github.com/manifestinteractive/teleprompter-app',
   iconPath: path.join(__dirname, 'assets/icon/png/128x128.png')
- })
-
+})
 
 /**
  * Recreate Window if not initialized
  */
- electron.app.on('activate', () => {
+electron.app.on('activate', () => {
   if (!mainWindow) {
     createWindow()
   }
@@ -290,11 +287,11 @@ electron.app.on('window-all-closed', () => {
 /**
  * Check if we are already running this app
  */
- const instanceLock = electron.app.requestSingleInstanceLock()
- if (!instanceLock) {
+const instanceLock = electron.app.requestSingleInstanceLock()
+if (!instanceLock) {
   if (mainWindow) {
     mainWindow = null
     electron.app.quit()
     process.exit()
   }
- }
+}

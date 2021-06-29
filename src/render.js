@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 const electron = require('electron')
 const version = require('../package.json').version
@@ -16,8 +16,8 @@ new (require('windowbar'))({
   title: `TelePrompter v${version}`,
   transparent: true
 })
-.on('close', () => electron.ipcRenderer.send('close'))
-.on('fullscreen', () => electron.ipcRenderer.send('fullscreen'))
-.on('maximize', () => electron.ipcRenderer.send('maximize'))
-.on('minimize', () => electron.ipcRenderer.send('minimize'))
-.appendTo(document.getElementById('windowbar'))
+  .on('close', () => electron.ipcRenderer.send('close'))
+  .on('fullscreen', () => electron.ipcRenderer.send('fullscreen'))
+  .on('maximize', () => electron.ipcRenderer.send('maximize'))
+  .on('minimize', () => electron.ipcRenderer.send('minimize'))
+  .appendTo(document.getElementById('windowbar'))
