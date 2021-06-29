@@ -72,7 +72,10 @@ settings.configure({
         label: 'Quit',
         accelerator: 'Command+Q',
         click: () => {
-          electron.app.quit()
+          if (mainWindow) {
+            mainWindow = null
+            electron.app.quit()
+          }
         }
       }
     ]
@@ -187,8 +190,11 @@ const createWindow = () => {
 	})
 
 	electron.ipcMain.on('close', () => {
-		electron.app.quit()
-    process.exit()
+    if (mainWindow) {
+      mainWindow = null
+      electron.app.quit()
+      process.exit()
+    }
 	})
 
 	electron.ipcMain.on('minimize', (e) => {
@@ -271,8 +277,11 @@ electron.app.on('ready', () => {
  */
 electron.app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
-    electron.app.quit()
-    process.exit()
+    if (mainWindow) {
+      mainWindow = null
+      electron.app.quit()
+      process.exit()
+    }
   }
 })
 
@@ -281,5 +290,9 @@ electron.app.on('window-all-closed', () => {
  */
  const instanceLock = electron.app.requestSingleInstanceLock()
  if (!instanceLock) {
-   electron.app.quit()
+  if (mainWindow) {
+    mainWindow = null
+    electron.app.quit()
+    process.exit()
+  }
  }
