@@ -31,7 +31,11 @@ module.exports = {
     {
       name: '@electron-forge/maker-squirrel',
       config: {
-        name: productName
+        name: productName,
+        description: 'TelePrompter App for Windows',
+        appCopyright: `© ${year} Peter Schmalfeldt`,
+        version: version,
+        authors: 'Peter Schmalfeldt'
       }
     },
     {
