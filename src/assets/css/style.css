@@ -275,10 +275,6 @@ input.jscolor {
   display: none;
 }
 
-#remote-control-modal, #software-update {
-  display: none;
-}
-
 #software-update {
   display: block;
   background: #FFF;
@@ -307,6 +303,10 @@ input.jscolor {
 
 #software-update a:hover {
   background-color: #4297d7;
+}
+
+#remote-control-modal, #software-update {
+  display: none;
 }
 
 .modal-overlay {
